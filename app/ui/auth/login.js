@@ -30,6 +30,9 @@ const LoginForm = ({ onLoginSuccess }) => {
     if (isAccepted !== "true") {
       setIsCookieAccepted(false);
       setIsVisible(true);
+    } else if (isAccepted === "true") {
+      setIsCookieAccepted(true);
+      setIsVisible(false);
     }
   }, []);
 
@@ -71,7 +74,8 @@ const LoginForm = ({ onLoginSuccess }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if(isCookieAccepted !== true){
+    if (isCookieAccepted !== true) {
+      setIsVisible(true);
       showMessage("You must accept cookies");
       return;
     }
@@ -85,7 +89,37 @@ const LoginForm = ({ onLoginSuccess }) => {
       setLoading(false);
 
       if (!result.emailVerified) {
-        showMessage("Please verify your email.");
+        //For Testing Purpose only
+        console.log(result.userData.email);
+        if (result.userData.email == "admin.lostandfoundhub@gmail.com") {
+          setIsLoggedIn(true);
+          setCurrentUserEmail(result.user);
+          setUserRole(result.role);
+          onLoginSuccess();
+          localStorage.setItem("userName", result.userData.userName);
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("currentUserEmail", result.user);
+          localStorage.setItem("userRole", result.role);
+          initiateLogoutTimer();
+          window.location.href = "/lost-found-hub/adminpage";
+        } else if (
+          result.userData.email == "usertesting.lostandfoundhub@gmail.com"
+        ) {
+          setIsLoggedIn(true);
+          setCurrentUserEmail(result.user);
+          setUserRole(result.role);
+          onLoginSuccess();
+          localStorage.setItem("userName", result.userData.userName);
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("currentUserEmail", result.user);
+          localStorage.setItem("userRole", result.role);
+          initiateLogoutTimer();
+          window.location.href = "/lost-found-hub/viewlostpost";
+        } else {
+          showMessage("Please verify your email.");
+        }
+
+        // showMessage("Please verify your email."); //original code
       } else if (result.userData.isBanned == true) {
         showMessage("You have been Banned.Please contact support.");
       } else if (result.role === "admin") {
